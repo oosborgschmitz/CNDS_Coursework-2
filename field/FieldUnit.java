@@ -51,20 +51,20 @@ public class FieldUnit implements IFieldUnit {
 
     @Override
     public void sMovingAverage (int k) {
-        /* TODO: Compute SMA and store values in a class attribute */
         List<Float> newAverages = new ArrayList<>();
         
         for (int i = 0; i < receivedMessages.size(); i++) {
-            float sum = 0;
-            int count = 0;
-            
-            // For first k-1 points, use all available points
-            for (int j = Math.max(0, i - k + 1); j <= i; j++) {
-                sum += receivedMessages.get(j).getMessage();
-                count++;
+            if (i < k) {
+                // For i < 7, just use the measurement itself
+                newAverages.add(receivedMessages.get(i).getMessage());
+            } else {
+                // For i >= 7, compute the moving average using previous k points
+                float sum = 0;
+                for (int j = i - k + 1; j <= i; j++) {
+                    sum += receivedMessages.get(j).getMessage();
+                }
+                newAverages.add(sum / k);
             }
-            
-            newAverages.add(sum / count);
         }
         
         movingAverages = newAverages;
