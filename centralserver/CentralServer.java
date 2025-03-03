@@ -33,7 +33,7 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
         expectedTotal = -1;
     }
 
-    public static void main (String[] args) throws RemoteException {
+    public static void main (String[] args) throws RemoteException, java.net.UnknownHostException {
         if (System.getProperty("java.version").startsWith("1.")) {
             System.setSecurityManager(new SecurityManager());
         }
