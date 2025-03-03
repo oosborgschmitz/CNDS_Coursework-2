@@ -75,6 +75,7 @@ public class FieldUnit implements IFieldUnit {
         this.timeout = timeout;
         DatagramSocket socket = null;
         long startTime = System.currentTimeMillis();
+        int expectedTotal = -1;
 
         try {
             socket = new DatagramSocket(port);
@@ -86,7 +87,6 @@ public class FieldUnit implements IFieldUnit {
         }
 
         boolean listen = true;
-        int expectedTotal = -1;
 
         while (listen) {
             byte[] receiveBuffer = new byte[buffsize];
@@ -118,12 +118,9 @@ public class FieldUnit implements IFieldUnit {
             socket.close();
         }
 
-        if (receivedMessages.size() >= msg.getTotalMessages()) {
-            long endTime = System.currentTimeMillis();
-            long duration = endTime - startTime;
-            System.out.printf("Time to receive all messages: %d ms%n", duration);
-            printStats();
-        }
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        System.out.printf("Time to receive all messages: %d ms%n", duration);
     }
 
     public static void main (String[] args) throws SocketException {
