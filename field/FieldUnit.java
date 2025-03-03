@@ -118,9 +118,11 @@ public class FieldUnit implements IFieldUnit {
             socket.close();
         }
 
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-        System.out.printf("Time to receive all messages: %d ms%n", duration);
+        if (receivedMessages.size() >= receivedMessages.getTotalMessages()) {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            System.out.printf("Time to receive all messages: %d ms%n", duration);
+        }
     }
 
     public static void main (String[] args) throws SocketException {

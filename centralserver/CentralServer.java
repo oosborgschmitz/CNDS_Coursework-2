@@ -24,14 +24,12 @@ import java.util.stream.Collectors;
 /* TODO extend appropriate classes and implement the appropriate interfaces */
 public class CentralServer extends UnicastRemoteObject implements ICentralServer {
     private List<MessageInfo> receivedMessages;
-    private long startTime;
     private int expectedTotal;
 
     protected CentralServer () throws RemoteException {
         super();
         /* TODO: Initialise Array receivedMessages */
         receivedMessages = new ArrayList<>();
-        startTime = -1;
         expectedTotal = -1;
     }
 
