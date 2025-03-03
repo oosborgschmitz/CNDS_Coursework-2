@@ -73,10 +73,7 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
 
     @Override
     public void receiveMsg (MessageInfo msg) {
-        if (startTime == -1) {
-            startTime = System.currentTimeMillis();
-            expectedTotal = msg.getTotalMessages();
-        }
+        long startTime = System.currentTimeMillis();
 
         System.out.println("[Central Server] Received message " + (msg.getMessageNum()) + " out of " +
                 msg.getTotalMessages() + ". Measure = " + msg.getMessage());
@@ -87,15 +84,9 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
 
         receivedMessages.add(msg);
 
-        if (receivedMessages.size() >= expectedTotal) {
-            long endTime = System.currentTimeMillis();
-            long duration = endTime - startTime;
-            System.out.printf("Time to receive all messages: %d ms%n", duration);
-            printStats();
-            // Reset timing variables for next batch
-            startTime = -1;
-            expectedTotal = -1;
-        }
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        System.out.printf("Time to receive all messages: %d ms%n", duration);
     }
 
     public void printStats() {
