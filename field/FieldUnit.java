@@ -74,6 +74,7 @@ public class FieldUnit implements IFieldUnit {
     public void receiveMeasures(int port, int timeout) throws SocketException {
         this.timeout = timeout;
         DatagramSocket socket = null;
+        long startTime = System.currentTimeMillis();
 
         try {
             socket = new DatagramSocket(port);
@@ -116,6 +117,10 @@ public class FieldUnit implements IFieldUnit {
         if (socket != null) {
             socket.close();
         }
+
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        System.out.printf("Time to receive all messages: %d ms%n", duration);
     }
 
     public static void main (String[] args) throws SocketException {

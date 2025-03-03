@@ -24,11 +24,15 @@ import java.util.stream.Collectors;
 /* TODO extend appropriate classes and implement the appropriate interfaces */
 public class CentralServer extends UnicastRemoteObject implements ICentralServer {
     private List<MessageInfo> receivedMessages;
+    private long startTime;
+    private int expectedTotal;
 
     protected CentralServer () throws RemoteException {
         super();
         /* TODO: Initialise Array receivedMessages */
         receivedMessages = new ArrayList<>();
+        startTime = -1;
+        expectedTotal = -1;
     }
 
     public static void main (String[] args) throws RemoteException {
@@ -69,6 +73,11 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
 
     @Override
     public void receiveMsg (MessageInfo msg) {
+        if (startTime == -1) {
+            startTime = System.currentTimeMillis();
+            expectedTotal = msg.getTotalMessages();
+        }
+
         System.out.println("[Central Server] Received message " + (msg.getMessageNum()) + " out of " +
                 msg.getTotalMessages() + ". Measure = " + msg.getMessage());
 
@@ -78,7 +87,10 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
 
         receivedMessages.add(msg);
 
-        if (receivedMessages.size() >= msg.getTotalMessages()) {
+        if (receivedMessages.size() >= expectedTotal) {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            System.out.printf("Time to receive all messages: %d ms%n", duration);
             printStats();
         }
     }
