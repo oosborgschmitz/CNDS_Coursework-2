@@ -25,12 +25,14 @@ import java.util.stream.Collectors;
 public class CentralServer extends UnicastRemoteObject implements ICentralServer {
     private List<MessageInfo> receivedMessages;
     private int expectedTotal;
+    private long startTime;
 
     protected CentralServer () throws RemoteException {
         super();
         /* TODO: Initialise Array receivedMessages */
         receivedMessages = new ArrayList<>();
         expectedTotal = -1;
+        startTime = -1;
     }
 
     public static void main (String[] args) throws RemoteException, java.net.UnknownHostException {
@@ -42,20 +44,17 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
             // Set the RMI hostname to the machine's IP
             String hostname = java.net.InetAddress.getLocalHost().getHostAddress();
             System.setProperty("java.rmi.server.hostname", hostname);
-            System.out.println("[Central Server] Using RMI hostname: " + hostname);
 
             Registry registry = null;
             try {
                 registry = LocateRegistry.createRegistry(1099);
-                System.out.println("[Central Server] Created RMI registry on port 1099");
             } catch (RemoteException e) {
                 registry = LocateRegistry.getRegistry(1099);
-                System.out.println("[Central Server] Connected to existing RMI registry on port 1099");
             }
 
             CentralServer cs = new CentralServer();
             registry.rebind("CentralServer", cs);
-            System.out.println("[Central Server] Ready");
+            System.out.println("Central Server Ready");
             
             while (true) {
                 Thread.sleep(1000);
@@ -71,20 +70,22 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
 
     @Override
     public void receiveMsg (MessageInfo msg) {
-        long startTime = System.currentTimeMillis();
+        if (receivedMessages.isEmpty()) {
+            receivedMessages.clear();
+            startTime = System.currentTimeMillis();
+        }
 
         System.out.println("[Central Server] Received message " + (msg.getMessageNum()) + " out of " +
                 msg.getTotalMessages() + ". Measure = " + msg.getMessage());
 
-        if (receivedMessages.isEmpty()) {
-            receivedMessages.clear();
-        }
-
         receivedMessages.add(msg);
 
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-        System.out.printf("Time to receive all messages: %d ms%n", duration);
+        if (receivedMessages.size() >= msg.getTotalMessages()) {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            System.out.printf("Time to receive all messages: %d ms%n", duration);
+            printStats();
+        }
     }
 
     public void printStats() {
