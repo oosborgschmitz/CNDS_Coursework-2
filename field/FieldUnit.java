@@ -211,7 +211,7 @@ public class FieldUnit implements IFieldUnit {
             }
         }
 
-        System.out.printf("Missing Messages = %d out of %d%n", 
+        System.out.printf("Total Missing Messages = %d out of %d%n", 
             missingSeqNums.size(), expectedTotal);
 
         receivedMessages.clear();
