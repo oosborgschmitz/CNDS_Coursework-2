@@ -124,18 +124,25 @@ public class FieldUnit implements IFieldUnit {
             return;
         }
 
+        System.out.println("[Field Unit] Starting Field Unit...");
+        
         /* TODO: Parse arguments */
         int port = Integer.parseInt(args[0]);
         String rmiAddress = args[1];
+        System.out.println("[Field Unit] Using port: " + port + ", RMI address: " + rmiAddress);
 
         /* TODO: Construct Field Unit Object */
         FieldUnit fieldUnit = new FieldUnit();
+        System.out.println("[Field Unit] Field Unit object created");
 
         /* TODO: Call initRMI on the Field Unit Object */
+        System.out.println("[Field Unit] Initializing RMI connection...");
         fieldUnit.initRMI(rmiAddress);
+        System.out.println("[Field Unit] RMI connection initialized successfully");
 
         while (true) {
             try {
+                System.out.println("[Field Unit] Starting new message reception cycle...");
                 /* TODO: Wait for incoming transmission */
                 fieldUnit.receiveMeasures(port, 50000);
 
@@ -164,10 +171,13 @@ public class FieldUnit implements IFieldUnit {
         }
 
         try {
+            System.out.println("[Field Unit] Attempting to connect to Central Server at " + address);
             Registry registry = LocateRegistry.getRegistry(address);
             central_server = (ICentralServer) registry.lookup("CentralServer");
+            System.out.println("[Field Unit] Successfully connected to Central Server");
         } catch (RemoteException | NotBoundException e) {
-            System.err.println("Error connecting to RMI server: " + e.getMessage());
+            System.err.println("[Field Unit] Error connecting to RMI server: " + e.getMessage());
+            System.err.println("[Field Unit] Make sure the Central Server is running on " + address);
             System.exit(1);
         }
     }
