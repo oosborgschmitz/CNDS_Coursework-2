@@ -172,15 +172,33 @@ public class FieldUnit implements IFieldUnit {
 
         try {
             System.out.println("[Field Unit] Attempting to connect to Central Server at " + address);
+            
             // Set the RMI hostname to the local machine's IP
             String localHost = java.net.InetAddress.getLocalHost().getHostAddress();
             System.setProperty("java.rmi.server.hostname", localHost);
             System.out.println("[Field Unit] Using local RMI hostname: " + localHost);
             
-            Registry registry = LocateRegistry.getRegistry(address);
-            central_server = (ICentralServer) registry.lookup("CentralServer");
-            System.out.println("[Field Unit] Successfully connected to Central Server");
-        } catch (RemoteException | NotBoundException | java.net.UnknownHostException e) {
+            // Try to connect to the RMI registry
+            Registry registry = null;
+            try {
+                registry = LocateRegistry.getRegistry(address, 1099);
+                System.out.println("[Field Unit] Connected to RMI registry at " + address + ":1099");
+            } catch (RemoteException e) {
+                System.err.println("[Field Unit] Failed to connect to RMI registry: " + e.getMessage());
+                System.err.println("[Field Unit] Make sure the Central Server is running and accessible");
+                System.exit(1);
+            }
+            
+            // Try to lookup the Central Server
+            try {
+                central_server = (ICentralServer) registry.lookup("CentralServer");
+                System.out.println("[Field Unit] Successfully connected to Central Server");
+            } catch (NotBoundException e) {
+                System.err.println("[Field Unit] Central Server not found in registry");
+                System.err.println("[Field Unit] Make sure the Central Server is running and bound to the registry");
+                System.exit(1);
+            }
+        } catch (RemoteException | java.net.UnknownHostException e) {
             System.err.println("[Field Unit] Error connecting to RMI server: " + e.getMessage());
             System.err.println("[Field Unit] Make sure the Central Server is running on " + address);
             System.exit(1);

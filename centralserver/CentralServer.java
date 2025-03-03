@@ -36,17 +36,24 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
             System.setSecurityManager(new SecurityManager());
         }
 
-        Registry registry = null;
         try {
-            registry = LocateRegistry.createRegistry(1099);
-        } catch (RemoteException e) {
-            registry = LocateRegistry.getRegistry(1099);
-        }
+            // Set the RMI hostname to the machine's IP
+            String hostname = java.net.InetAddress.getLocalHost().getHostAddress();
+            System.setProperty("java.rmi.server.hostname", hostname);
+            System.out.println("[Central Server] Using RMI hostname: " + hostname);
 
-        try {
+            Registry registry = null;
+            try {
+                registry = LocateRegistry.createRegistry(1099);
+                System.out.println("[Central Server] Created RMI registry on port 1099");
+            } catch (RemoteException e) {
+                registry = LocateRegistry.getRegistry(1099);
+                System.out.println("[Central Server] Connected to existing RMI registry on port 1099");
+            }
+
             CentralServer cs = new CentralServer();
             registry.rebind("CentralServer", cs);
-            System.out.println("Central Server ready");
+            System.out.println("[Central Server] Ready");
             
             while (true) {
                 Thread.sleep(1000);
