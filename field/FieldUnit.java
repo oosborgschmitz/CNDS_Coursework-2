@@ -172,10 +172,15 @@ public class FieldUnit implements IFieldUnit {
 
         try {
             System.out.println("[Field Unit] Attempting to connect to Central Server at " + address);
+            // Set the RMI hostname to the local machine's IP
+            String localHost = java.net.InetAddress.getLocalHost().getHostAddress();
+            System.setProperty("java.rmi.server.hostname", localHost);
+            System.out.println("[Field Unit] Using local RMI hostname: " + localHost);
+            
             Registry registry = LocateRegistry.getRegistry(address);
             central_server = (ICentralServer) registry.lookup("CentralServer");
             System.out.println("[Field Unit] Successfully connected to Central Server");
-        } catch (RemoteException | NotBoundException e) {
+        } catch (RemoteException | NotBoundException | java.net.UnknownHostException e) {
             System.err.println("[Field Unit] Error connecting to RMI server: " + e.getMessage());
             System.err.println("[Field Unit] Make sure the Central Server is running on " + address);
             System.exit(1);
