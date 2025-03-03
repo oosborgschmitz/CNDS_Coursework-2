@@ -29,7 +29,6 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
 
     protected CentralServer () throws RemoteException {
         super();
-        /* TODO: Initialise Array receivedMessages */
         receivedMessages = new ArrayList<>();
         expectedTotal = -1;
         startTime = -1;
@@ -55,6 +54,7 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
             CentralServer cs = new CentralServer();
             registry.rebind("CentralServer", cs);
             System.out.println("Central Server Ready");
+            cs.startTime = System.currentTimeMillis(); // Start timing when server is ready
             
             while (true) {
                 Thread.sleep(1000);

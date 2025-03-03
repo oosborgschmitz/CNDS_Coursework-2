@@ -74,7 +74,7 @@ public class FieldUnit implements IFieldUnit {
     public void receiveMeasures(int port, int timeout) throws SocketException {
         this.timeout = timeout;
         DatagramSocket socket = null;
-        long startTime = System.currentTimeMillis();
+        long startTime = -1;
         int expectedTotal = -1;
 
         try {
@@ -97,6 +97,10 @@ public class FieldUnit implements IFieldUnit {
                 String received = new String(receivePacket.getData(), 0, receivePacket.getLength());
                 MessageInfo msg = new MessageInfo(received);
 
+                if (startTime == -1) {
+                    startTime = System.currentTimeMillis();
+                }
+
                 if (expectedTotal == -1) {
                     expectedTotal = msg.getTotalMessages();
                 }
@@ -118,9 +122,11 @@ public class FieldUnit implements IFieldUnit {
             socket.close();
         }
 
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-        System.out.printf("Time to receive all messages: %d ms%n", duration);
+        if (startTime != -1) {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            System.out.printf("Time to receive all messages: %d ms%n", duration);
+        }
     }
 
     public static void main (String[] args) throws SocketException {
