@@ -84,9 +84,12 @@ public class CentralServer extends UnicastRemoteObject implements ICentralServer
 
         receivedMessages.add(msg);
 
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-        System.out.printf("Time to receive all messages: %d ms%n", duration);
+        if (receivedMessages.size() >= msg.getTotalMessages()) {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            System.out.printf("Time to receive all messages: %d ms%n", duration);
+            printStats();
+        }
     }
 
     public void printStats() {
